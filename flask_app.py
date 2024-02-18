@@ -12,6 +12,7 @@ telepot.api._pools = {
 }
 telepot.api._onetime_pool_spec = (urllib3.ProxyManager, dict(proxy_url=proxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
 
+password = '[YOUR CUSTOM PASSWORD]'
 addr = '[YOUR SITE ADDRESS]'
 secret = "[UUID CODE]"
 bot = telepot.Bot('[YOUR BOT CODE]')
@@ -40,7 +41,7 @@ def dir_listing():
 def deleteFolder(paswd):
     abs_path = '/home/epfsbot/upload'
     files = os.listdir(abs_path)
-    if paswd == "[YOUR CUSTOM PASSWORD]":
+    if paswd == password :
         for file in files:
             os.remove('/home/epfsbot/upload/' + file)
     return render_template('index.html')
