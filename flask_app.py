@@ -20,6 +20,8 @@ bot.setWebhook("{}/{}".format(addr,secret), max_connections=1)
 
 app = Flask(__name__)
 
+app.config['MAX_CONTENT_PATH'] = 400000000
+
 def makeqr(text):
     url1 = pyqrcode.create(text)
     url1.svg('qr.svg', scale=4)
@@ -36,6 +38,16 @@ def dir_listing():
     abs_path = '/home/epfsbot/upload'
     files = os.listdir(abs_path)
     return render_template('index.html', files=files)
+
+@app.route('/uploader' , methods = ['GET', 'POST'])
+def uploader():
+    if request.method == 'POST':
+        f = request.files['file']
+        f.save('/home/epfsbot/upload/' + f.filename)
+        makeqr(f'{addr}/upload/{f.filename}')
+        imgfile=base64.b64encode(open("/home/epfsbot/qr.png","rb").read()).decode('ascii')
+        return "<!DOCTYPE htm><html><head><title>epfsbot file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><img src='data:image/svg+xml;base64,{}' /></center></body></html>".format(imgfile)
+
 
 @app.route('/del/<paswd>')
 def deleteFolder(paswd):
@@ -58,6 +70,7 @@ def telegram_webhook():
 
     if "message" in update:
         chat_id = update["message"]["chat"]["id"]
+        file_name = update["message"]["date"]
         #bot.sendMessage(chat_id, update )
 
         if "text" in update["message"]:
@@ -69,11 +82,13 @@ def telegram_webhook():
                 #bot.sendPhoto(chat_id, open("/home/epfsbot/upload//qr.png","rb"))
 
             else:
-                f=open('/home/epfsbot/upload/{}.txt'.format(update["message"]["date"]),'w')
+                #if "caption" in update["message"]:
+                #    file_name = update["message"]["caption"]
+                f=open('/home/epfsbot/upload/{}.txt'.format(file_name),'w')
                 f.write(update["message"]["text"])
                 f.close()
-                bot.sendMessage(chat_id,'{}/upload/{}.txt'.format(addr , update["message"]["date"]))
-                makeqr('{}/upload/{}.txt'.format(addr, update["message"]["date"]))
+                bot.sendMessage(chat_id,'{}/upload/{}.txt'.format(addr , file_name))
+                makeqr('{}/upload/{}.txt'.format(addr, file_name))
                 bot.sendPhoto(chat_id, open("/home/epfsbot/qr.png","rb"))
                 #bot.sendMessage(chat_id, eliza_chatbot.respond(text))
 
