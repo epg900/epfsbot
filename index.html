@@ -18,7 +18,15 @@
 
 
 <tbody>
-
+    <tr>
+        <form action = "/uploader" method = "POST" enctype = "multipart/form-data" >
+        <td>
+            <input class="form-control"  type = "file" name = "file" />
+        </td>
+        <td>
+            <input class="btn btn-success" type = "submit" value="Upload File" />
+        </td>
+    </tr>
 
     {% for file in files %}
     <tr>
@@ -29,7 +37,7 @@
         </td>
         <td>
         <b>
-        <a class="btn btn-primary" href="http://[your site address]/qr/{{file}}"> show Qr code</a>
+        <a class="btn btn-primary" href="http://epfsbot.eu.pythonanywhere.com/qr/{{file}}"> show Qr code</a>
         </b>
         </td>
     </tr>
